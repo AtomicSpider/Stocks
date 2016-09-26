@@ -1,9 +1,9 @@
-package com.sam_chordas.android.stockhawk.rest;
+package com.satandigital.stocks.rest;
 
 import android.content.ContentProviderOperation;
 import android.util.Log;
-import com.sam_chordas.android.stockhawk.data.QuoteColumns;
-import com.sam_chordas.android.stockhawk.data.QuoteProvider;
+import com.satandigital.stocks.data.QuoteColumns;
+import com.satandigital.stocks.data.QuoteProvider;
 import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONException;

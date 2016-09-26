@@ -1,4 +1,4 @@
-package com.sam_chordas.android.stockhawk.rest;
+package com.satandigital.stocks.rest;
 
 import android.content.Context;
 import android.database.Cursor;
