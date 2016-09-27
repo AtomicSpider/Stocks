@@ -15,6 +15,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,6 +38,8 @@ import com.google.android.gms.gcm.Task;
 import com.melnykov.fab.FloatingActionButton;
 import com.satandigital.stocks.touch_helper.SimpleItemTouchHelperCallback;
 
+import static android.database.DatabaseUtils.dumpCursorToString;
+
 public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     /**
@@ -46,6 +49,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
+    public static final String EXTRA_SYMBOL = "EXTRA_SYMBOL";
+
     private CharSequence mTitle;
     private Intent mServiceIntent;
     private ItemTouchHelper mItemTouchHelper;
@@ -87,8 +92,11 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                 new RecyclerViewItemClickListener.OnItemClickListener() {
                     @Override
                     public void onItemClick(View v, int position) {
-                        //TODO:
-                        // do something on item click
+                        mCursorAdapter.getCursor().moveToPosition(position);
+                        Log.d("TAG", "" + dumpCursorToString(mCursorAdapter.getCursor()));
+//                        Intent mIntent = new Intent(MyStocksActivity.this, LineGraphActivity.class);
+//                        mIntent.putExtra(EXTRA_SYMBOL, mCursorAdapter.);
+//                        startActivity(mIntent);
                     }
                 }));
         recyclerView.setAdapter(mCursorAdapter);

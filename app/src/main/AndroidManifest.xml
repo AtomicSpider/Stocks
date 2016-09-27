@@ -13,36 +13,45 @@
         android:name="com.google.android.gcm.demo.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
 
-    <uses-permission
-        android:name="com.google.android.gcm.demo.permission.C2D_MESSAGE" />
+    <uses-permission android:name="com.google.android.gcm.demo.permission.C2D_MESSAGE" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
 
         <activity
             android:name="com.satandigital.stocks.ui.MyStocksActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name="com.satandigital.stocks.service.StockTaskService"
-            android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE"
-            android:exported="true">
+        <activity
+            android:name="com.satandigital.stocks.ui.LineGraphActivity"
+            android:label="@string/app_name">
             <intent-filter>
-                <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name="com.satandigital.stocks.service.StockTaskService"
+            android:exported="true"
+            android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">
+            <intent-filter>
+                <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />
             </intent-filter>
         </service>
         <service android:name="com.satandigital.stocks.service.StockIntentService" />
+
         <provider
-            android:authorities="com.satandigital.stocks.data.QuoteProvider"
             android:name="com.satandigital.stocks.data.generated.QuoteProvider"
-            android:exported="false"/>
+            android:authorities="com.satandigital.stocks.data.QuoteProvider"
+            android:exported="false" />
     </application>
 
 </manifest>
