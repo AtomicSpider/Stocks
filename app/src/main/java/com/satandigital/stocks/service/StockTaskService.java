@@ -26,6 +26,10 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by sam_chordas on 9/30/15.
@@ -158,7 +162,66 @@ public class StockTaskService extends GcmTaskService {
             }
         }
 
+        syncTemporalQuotes();
+
         return result;
+    }
+
+    private void syncTemporalQuotes() {
+        Cursor queryCursor = mContext.getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
+                new String[]{"Distinct " + QuoteColumns.SYMBOL}, null,
+                null, null);
+
+        if (queryCursor.getCount() != 0 && queryCursor != null) {
+            queryCursor.moveToFirst();
+            for (int i = 0; i < queryCursor.getCount(); i++) {
+                fetchTemporalQuotes(queryCursor);
+                queryCursor.moveToNext();
+            }
+            queryCursor.close();
+        }
+    }
+
+    private void fetchTemporalQuotes(Cursor cursor) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+
+        Calendar calendarEnd = Calendar.getInstance();
+
+        Calendar calendarStart = Calendar.getInstance();
+        calendarStart.add(Calendar.MONTH, -1);
+
+        String startDate = simpleDateFormat.format(calendarStart.getTime());
+        String endDate = simpleDateFormat.format(calendarEnd.getTime());
+
+        String urlString;
+        StringBuilder urlStringBuilder = new StringBuilder();
+
+        try {
+            urlStringBuilder.append("https://query.yahooapis.com/v1/public/yql?q=");
+            urlStringBuilder.append(URLEncoder.encode("select * from yahoo.finance.historicaldata where symbol=\"", "UTF-8"));
+            urlStringBuilder.append(cursor.getString(cursor.getColumnIndex("symbol")));
+            urlStringBuilder.append(URLEncoder.encode("\" and startDate=\"" + startDate + "\" and endDate=\"" + endDate + "\"", "UTF-8"));
+            urlStringBuilder.append("&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables."
+                    + "org%2Falltableswithkeys&callback=");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        urlString = urlStringBuilder.toString();
+
+        try {
+            String getResponse = fetchData(urlString);
+
+            try {
+                mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
+                        Utils.quoteTemporalJsonToContentVals(getResponse, mContext));
+            } catch (RemoteException | OperationApplicationException e) {
+                Log.e(LOG_TAG, "Error applying batch insert", e);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

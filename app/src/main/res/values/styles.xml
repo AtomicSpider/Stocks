@@ -7,7 +7,7 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="AppThemeNoActionBar" parent="Theme.AppCompat.NoActionBar">
+    <style name="AppThemeNoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/material_blue_500</item>
         <item name="colorPrimaryDark">@color/material_blue_700</item>
         <!-- Customize your theme here. -->

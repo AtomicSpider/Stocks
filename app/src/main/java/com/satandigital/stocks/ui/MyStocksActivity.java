@@ -49,8 +49,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
-    public static final String EXTRA_SYMBOL = "EXTRA_SYMBOL";
-
     private CharSequence mTitle;
     private Intent mServiceIntent;
     private ItemTouchHelper mItemTouchHelper;
@@ -93,10 +91,14 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                     @Override
                     public void onItemClick(View v, int position) {
                         mCursorAdapter.getCursor().moveToPosition(position);
-                        Log.d("TAG", "" + dumpCursorToString(mCursorAdapter.getCursor()));
-//                        Intent mIntent = new Intent(MyStocksActivity.this, LineGraphActivity.class);
-//                        mIntent.putExtra(EXTRA_SYMBOL, mCursorAdapter.);
-//                        startActivity(mIntent);
+                        Intent mIntent = new Intent(MyStocksActivity.this, LineGraphActivity.class);
+                        mIntent.putExtra("symbol", mCursorAdapter.getCursor().getString(mCursorAdapter.getCursor().getColumnIndex("symbol")));
+                        mIntent.putExtra("name", mCursorAdapter.getCursor().getString(mCursorAdapter.getCursor().getColumnIndex("name")));
+                        mIntent.putExtra("percent_change", mCursorAdapter.getCursor().getString(mCursorAdapter.getCursor().getColumnIndex("percent_change")));
+                        mIntent.putExtra("change", mCursorAdapter.getCursor().getString(mCursorAdapter.getCursor().getColumnIndex("change")));
+                        mIntent.putExtra("bid_price", mCursorAdapter.getCursor().getString(mCursorAdapter.getCursor().getColumnIndex("bid_price")));
+                        mIntent.putExtra("last_trade", mCursorAdapter.getCursor().getString(mCursorAdapter.getCursor().getColumnIndex("last_trade")));
+                        startActivity(mIntent);
                     }
                 }));
         recyclerView.setAdapter(mCursorAdapter);
@@ -219,8 +221,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // This narrows the return to only the stocks that are most current.
         return new CursorLoader(this, QuoteProvider.Quotes.CONTENT_URI,
-                new String[]{QuoteColumns._ID, QuoteColumns.SYMBOL, QuoteColumns.BIDPRICE,
-                        QuoteColumns.PERCENT_CHANGE, QuoteColumns.CHANGE, QuoteColumns.ISUP},
+                new String[]{QuoteColumns._ID, QuoteColumns.SYMBOL, QuoteColumns.NAME, QuoteColumns.BIDPRICE,
+                        QuoteColumns.PERCENT_CHANGE, QuoteColumns.CHANGE, QuoteColumns.ISUP, QuoteColumns.LAST_TRADE},
                 QuoteColumns.ISCURRENT + " = ?",
                 new String[]{"1"},
                 null);
