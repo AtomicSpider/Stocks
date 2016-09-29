@@ -44,6 +44,8 @@ public class StockTaskService extends GcmTaskService {
     private StringBuilder mStoredSymbols = new StringBuilder();
     private boolean isUpdate;
 
+    public static final String ACTION_DATA_UPDATED = "com.satandigital.stocks.service.ACTION_DATA_UPDATED";
+
     public StockTaskService() {
     }
 
@@ -128,6 +130,7 @@ public class StockTaskService extends GcmTaskService {
                     boolean addEntry = true;
                     ContentValues contentValues = new ContentValues();
                     // update ISCURRENT to 0 (false) so new data is current
+
                     if (isUpdate) {
                         contentValues.put(QuoteColumns.ISCURRENT, 0);
                         mContext.getContentResolver().update(QuoteProvider.Quotes.CONTENT_URI, contentValues,
@@ -141,8 +144,9 @@ public class StockTaskService extends GcmTaskService {
                             e.printStackTrace();
                         }
                     }
+
                     if (addEntry) mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
-                            Utils.quoteJsonToContentVals(getResponse));
+                            Utils.quoteJsonToContentVals(getResponse, mContext));
                     else {
                         Handler mHandler = new Handler(mContext.getMainLooper());
                         mHandler.post(new Runnable() {

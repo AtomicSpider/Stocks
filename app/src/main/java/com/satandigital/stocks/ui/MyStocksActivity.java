@@ -49,6 +49,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     public static final int LINE_GRAPH_REQUEST_CODE = 1777;
+    public static final String ADD_STOCK_FROM_WIDGET = "com.satandigital.stocks.service.ADD_STOCK_FROM_WIDGET";
 
     private CharSequence mTitle;
     private Intent mServiceIntent;
@@ -56,7 +57,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     private static final int CURSOR_LOADER_ID = 0;
     private QuoteCursorAdapter mCursorAdapter;
     private Context mContext;
-    private Cursor mCursor;
     boolean isConnected;
 
     @Override
@@ -110,40 +110,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isConnected) {
-                    new MaterialDialog.Builder(mContext).title(R.string.symbol_search)
-                            .content(R.string.content_test)
-                            .theme(Theme.LIGHT)
-                            .inputType(InputType.TYPE_CLASS_TEXT)
-                            .input(R.string.input_hint, R.string.input_prefill, new MaterialDialog.InputCallback() {
-                                @Override
-                                public void onInput(MaterialDialog dialog, CharSequence input) {
-                                    // On FAB click, receive user input. Make sure the stock doesn't already exist
-                                    // in the DB and proceed accordingly
-                                    Cursor c = getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
-                                            new String[]{QuoteColumns.SYMBOL},
-                                            "lower("+QuoteColumns.SYMBOL + ")=lower('"+ input.toString().trim() +"')",
-                                            null, null);
-                                    if (c.getCount() != 0) {
-                                        Toast toast =
-                                                Toast.makeText(MyStocksActivity.this, getString(R.string.stock_exists),
-                                                        Toast.LENGTH_LONG);
-                                        toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
-                                        toast.show();
-                                        return;
-                                    } else {
-                                        // Add the stock to DB
-                                        mServiceIntent.putExtra("tag", "add");
-                                        mServiceIntent.putExtra("symbol", input.toString());
-                                        startService(mServiceIntent);
-                                    }
-                                }
-                            })
-                            .show();
-                } else {
-                    networkToast();
-                }
-
+                showAddStockDialog();
             }
         });
 
@@ -170,6 +137,49 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
             // Schedule task with tag "periodic." This ensure that only the stocks present in the DB
             // are updated.
             GcmNetworkManager.getInstance(this).schedule(periodicTask);
+        }
+
+        if (getIntent().hasExtra("action")) {
+            if (getIntent().getStringExtra("action").equals(ADD_STOCK_FROM_WIDGET)) {
+                Log.d("TAG", "add stock frm widget");
+                showAddStockDialog();
+            }
+        }
+    }
+
+    private void showAddStockDialog() {
+        if (isConnected) {
+            new MaterialDialog.Builder(mContext).title(R.string.symbol_search)
+                    .content(R.string.content_test)
+                    .theme(Theme.LIGHT)
+                    .inputType(InputType.TYPE_CLASS_TEXT)
+                    .input(R.string.input_hint, R.string.input_prefill, new MaterialDialog.InputCallback() {
+                        @Override
+                        public void onInput(MaterialDialog dialog, CharSequence input) {
+                            // On FAB click, receive user input. Make sure the stock doesn't already exist
+                            // in the DB and proceed accordingly
+                            Cursor c = getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
+                                    new String[]{QuoteColumns.SYMBOL},
+                                    "lower(" + QuoteColumns.SYMBOL + ")=lower('" + input.toString().trim() + "')",
+                                    null, null);
+                            if (c.getCount() != 0) {
+                                Toast toast =
+                                        Toast.makeText(MyStocksActivity.this, getString(R.string.stock_exists),
+                                                Toast.LENGTH_LONG);
+                                toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
+                                toast.show();
+                                return;
+                            } else {
+                                // Add the stock to DB
+                                mServiceIntent.putExtra("tag", "add");
+                                mServiceIntent.putExtra("symbol", input.toString());
+                                startService(mServiceIntent);
+                            }
+                        }
+                    })
+                    .show();
+        } else {
+            networkToast();
         }
     }
 
@@ -228,7 +238,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mCursorAdapter.swapCursor(data);
-        mCursor = data;
     }
 
     @Override

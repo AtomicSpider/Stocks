@@ -24,4 +24,8 @@
     <!--YAHOO APIs-->
     <string name="YAHOO_BASE_URL" translatable="false">https://query.yahooapis.com/v1/public/yql?q=</string>
     <string name="YAHOO_OUTPUT_PREFS" translatable="false">&amp;format=json&amp;diagnostics=true&amp;env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&amp;callback=</string>
+
+    <!--Widget-->
+    <string name="widget_title">My Stocks</string>
+    <string name="widget_empty">No Stocks Added.</string>
 </resources>

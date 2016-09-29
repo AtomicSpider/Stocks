@@ -2,6 +2,7 @@ package com.satandigital.stocks.rest;
 
 import android.content.ContentProviderOperation;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.satandigital.stocks.data.QuoteColumns;
@@ -14,6 +15,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import static com.satandigital.stocks.service.StockTaskService.ACTION_DATA_UPDATED;
+
 /**
  * Created by sam_chordas on 10/8/15.
  */
@@ -23,7 +26,7 @@ public class Utils {
 
     public static boolean showPercent = true;
 
-    public static ArrayList quoteJsonToContentVals(String JSON) {
+    public static ArrayList quoteJsonToContentVals(String JSON, Context context) {
         ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>();
         JSONObject jsonObject = null;
         JSONArray resultsArray = null;
@@ -50,7 +53,16 @@ public class Utils {
         } catch (JSONException e) {
             Log.e(LOG_TAG, "String to JSON failed: " + e);
         }
+        if (batchOperations.size()>0) updateWidgets(context);
         return batchOperations;
+    }
+
+    public static void updateWidgets(Context context) {
+        Log.d("TAG", "update");
+        Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED)
+                .setPackage(context.getPackageName());
+        context.sendBroadcast(dataUpdatedIntent);
+
     }
 
     public static ArrayList<ContentProviderOperation> quoteTemporalJsonToContentVals(String JSON, Context context) {

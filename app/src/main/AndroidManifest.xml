@@ -54,6 +54,20 @@
             android:name="com.satandigital.stocks.data.generated.QuoteProvider"
             android:authorities="com.satandigital.stocks.data.QuoteProvider"
             android:exported="false" />
+
+        <receiver android:name=".widget.StockWidgetProvider" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.satandigital.stocks.service.ACTION_DATA_UPDATED" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/stock_widget_info" />
+        </receiver>
+        <service
+            android:name=".widget.StockWidgetService"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
     </application>
 
 </manifest>

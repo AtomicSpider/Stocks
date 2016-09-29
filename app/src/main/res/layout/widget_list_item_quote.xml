@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:orientation="horizontal"
+    android:theme="@style/ThemeOverlay.AppCompat.Light"
+    android:padding="5dp">
+
+    <TextView
+        android:id="@+id/stock_symbol"
+        android:textSize="16sp"
+        android:textAllCaps="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="start|center_vertical"
+        tools:text="GOOG" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="end">
+
+        <TextView
+            android:id="@+id/bid_price"
+            android:textSize="16sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="10sp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10sp"
+            android:paddingStart="10dp"
+            tools:text="1000.00" />
+
+        <TextView
+            android:id="@+id/change"
+            android:textSize="16sp"
+            android:textColor="@android:color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/percent_change_pill"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            tools:text="100%" />
+    </LinearLayout>
+</LinearLayout>
