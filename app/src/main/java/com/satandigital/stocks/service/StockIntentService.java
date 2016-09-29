@@ -22,7 +22,7 @@ public class StockIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.d(StockIntentService.class.getSimpleName(), "Stock Intent Service");
+        Log.i(StockIntentService.class.getSimpleName(), "Stock Intent Service");
         StockTaskService stockTaskService = new StockTaskService(this);
         Bundle args = new Bundle();
         if (intent.getStringExtra("tag").equals("add")) {
