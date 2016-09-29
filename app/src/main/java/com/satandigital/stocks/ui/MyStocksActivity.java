@@ -27,6 +27,7 @@ import com.afollestad.materialdialogs.Theme;
 import com.satandigital.stocks.R;
 import com.satandigital.stocks.data.QuoteColumns;
 import com.satandigital.stocks.data.QuoteProvider;
+import com.satandigital.stocks.data.QuoteTemporalColumns;
 import com.satandigital.stocks.rest.QuoteCursorAdapter;
 import com.satandigital.stocks.rest.RecyclerViewItemClickListener;
 import com.satandigital.stocks.rest.Utils;
@@ -49,6 +50,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
+    public static final int LINE_GRAPH_REQUEST_CODE = 1777;
+
     private CharSequence mTitle;
     private Intent mServiceIntent;
     private ItemTouchHelper mItemTouchHelper;
@@ -98,7 +101,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                         mIntent.putExtra("change", mCursorAdapter.getCursor().getString(mCursorAdapter.getCursor().getColumnIndex("change")));
                         mIntent.putExtra("bid_price", mCursorAdapter.getCursor().getString(mCursorAdapter.getCursor().getColumnIndex("bid_price")));
                         mIntent.putExtra("last_trade", mCursorAdapter.getCursor().getString(mCursorAdapter.getCursor().getColumnIndex("last_trade")));
-                        startActivity(mIntent);
+                        startActivityForResult(mIntent, LINE_GRAPH_REQUEST_CODE);
                     }
                 }));
         recyclerView.setAdapter(mCursorAdapter);
@@ -239,4 +242,15 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         mCursorAdapter.swapCursor(null);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == LINE_GRAPH_REQUEST_CODE && resultCode == RESULT_OK) {
+            if (data.getStringExtra("action").equals("delete")) {
+                getContentResolver().delete(QuoteProvider.Quotes.CONTENT_URI,
+                        QuoteTemporalColumns.SYMBOL + " = \"" + data.getStringExtra("symbol") + "\"", null);
+            }
+        }
+    }
 }
