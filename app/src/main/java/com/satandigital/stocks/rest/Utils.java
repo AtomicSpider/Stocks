@@ -8,11 +8,11 @@ import com.satandigital.stocks.data.QuoteColumns;
 import com.satandigital.stocks.data.QuoteProvider;
 import com.satandigital.stocks.data.QuoteTemporalColumns;
 
-import java.util.ArrayList;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * Created by sam_chordas on 10/8/15.
