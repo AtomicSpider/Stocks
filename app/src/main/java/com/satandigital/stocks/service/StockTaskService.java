@@ -13,7 +13,7 @@ import android.widget.Toast;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmTaskService;
 import com.google.android.gms.gcm.TaskParams;
-import com.satandigital.stocks.StocksApp;
+import com.satandigital.stocks.R;
 import com.satandigital.stocks.data.QuoteColumns;
 import com.satandigital.stocks.data.QuoteProvider;
 import com.satandigital.stocks.rest.Utils;
@@ -69,7 +69,7 @@ public class StockTaskService extends GcmTaskService {
         StringBuilder urlStringBuilder = new StringBuilder();
         try {
             // Base URL for the Yahoo query
-            urlStringBuilder.append(StocksApp.YAHOO_BASE_URL);
+            urlStringBuilder.append(mContext.getString(R.string.YAHOO_BASE_URL));
             urlStringBuilder.append(URLEncoder.encode("select * from yahoo.finance.quotes where symbol in (", "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -113,7 +113,7 @@ public class StockTaskService extends GcmTaskService {
             }
         }
         // finalize the URL for the API query.
-        urlStringBuilder.append(StocksApp.YAHOO_OUTPUT_PREFS);
+        urlStringBuilder.append(mContext.getString(R.string.YAHOO_OUTPUT_PREFS));
 
         String urlString;
         String getResponse;
@@ -148,7 +148,7 @@ public class StockTaskService extends GcmTaskService {
                         mHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(mContext, StocksApp.invalid_stock, Toast.LENGTH_LONG).show();
+                                Toast.makeText(mContext, mContext.getString(R.string.invalid_stock), Toast.LENGTH_LONG).show();
                             }
                         });
                     }
@@ -195,11 +195,11 @@ public class StockTaskService extends GcmTaskService {
         StringBuilder urlStringBuilder = new StringBuilder();
 
         try {
-            urlStringBuilder.append(StocksApp.YAHOO_BASE_URL);
+            urlStringBuilder.append(mContext.getString(R.string.YAHOO_BASE_URL));
             urlStringBuilder.append(URLEncoder.encode("select * from yahoo.finance.historicaldata where symbol=\"", "UTF-8"));
             urlStringBuilder.append(cursor.getString(cursor.getColumnIndex("symbol")));
             urlStringBuilder.append(URLEncoder.encode("\" and startDate=\"" + startDate + "\" and endDate=\"" + endDate + "\"", "UTF-8"));
-            urlStringBuilder.append(StocksApp.YAHOO_OUTPUT_PREFS);
+            urlStringBuilder.append(mContext.getString(R.string.YAHOO_OUTPUT_PREFS));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

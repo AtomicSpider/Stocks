@@ -15,6 +15,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,7 +29,6 @@ import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
 import com.melnykov.fab.FloatingActionButton;
 import com.satandigital.stocks.R;
-import com.satandigital.stocks.StocksApp;
 import com.satandigital.stocks.data.QuoteColumns;
 import com.satandigital.stocks.data.QuoteProvider;
 import com.satandigital.stocks.data.QuoteTemporalColumns;
@@ -121,11 +121,12 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                                     // On FAB click, receive user input. Make sure the stock doesn't already exist
                                     // in the DB and proceed accordingly
                                     Cursor c = getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
-                                            new String[]{QuoteColumns.SYMBOL}, QuoteColumns.SYMBOL + "= ?",
-                                            new String[]{input.toString()}, null);
+                                            new String[]{QuoteColumns.SYMBOL},
+                                            "lower("+QuoteColumns.SYMBOL + ")=lower('"+ input.toString().trim() +"')",
+                                            null, null);
                                     if (c.getCount() != 0) {
                                         Toast toast =
-                                                Toast.makeText(MyStocksActivity.this, StocksApp.stock_exists,
+                                                Toast.makeText(MyStocksActivity.this, getString(R.string.stock_exists),
                                                         Toast.LENGTH_LONG);
                                         toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
                                         toast.show();
@@ -180,7 +181,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     }
 
     public void networkToast() {
-        Toast.makeText(mContext, StocksApp.network_toast, Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, getString(R.string.network_toast), Toast.LENGTH_SHORT).show();
     }
 
     public void restoreActionBar() {
