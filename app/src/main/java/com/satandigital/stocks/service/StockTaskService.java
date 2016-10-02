@@ -1,12 +1,19 @@
 package com.satandigital.stocks.service;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
+import android.graphics.BitmapFactory;
+import android.media.RingtoneManager;
 import android.os.Handler;
 import android.os.RemoteException;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -28,8 +35,12 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
+
+import static com.satandigital.stocks.rest.Utils.updateWidgets;
 
 /**
  * Created by sam_chordas on 9/30/15.
@@ -64,10 +75,12 @@ public class StockTaskService extends GcmTaskService {
 
     @Override
     public int onRunTask(TaskParams params) {
+
         Cursor initQueryCursor;
         if (mContext == null) {
             mContext = this;
         }
+        //showDebugNotification();
         StringBuilder urlStringBuilder = new StringBuilder();
         try {
             // Base URL for the Yahoo query
@@ -145,9 +158,12 @@ public class StockTaskService extends GcmTaskService {
                         }
                     }
 
-                    if (addEntry) mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
-                            Utils.quoteJsonToContentVals(getResponse, mContext));
-                    else {
+                    if (addEntry) {
+                        ArrayList<ContentProviderOperation> batchOperations = Utils.quoteJsonToContentVals(getResponse, mContext);
+                        mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
+                                batchOperations);
+                        if (batchOperations.size() > 0) updateWidgets(mContext);
+                    } else {
                         Handler mHandler = new Handler(mContext.getMainLooper());
                         mHandler.post(new Runnable() {
                             @Override
@@ -167,6 +183,28 @@ public class StockTaskService extends GcmTaskService {
         syncTemporalQuotes();
 
         return result;
+    }
+
+    private void showDebugNotification() {
+        SimpleDateFormat formatter
+                = new SimpleDateFormat("yyyy.MM.dd 'at' hh:mm:ss a", Locale.getDefault());
+        Date currentTime = new Date();
+        String dateString = formatter.format(currentTime);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, new Intent(), PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(mContext)
+                        .setSmallIcon(R.drawable.ic_notification)
+                        .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(),
+                                R.mipmap.ic_launcher))
+                        .setContentTitle("Stocks are syncing...")
+                        .setContentText("Time: " + dateString)
+                        .setContentIntent(pendingIntent);
+        mBuilder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+
+        NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(1, mBuilder.build());
     }
 
     private void syncTemporalQuotes() {

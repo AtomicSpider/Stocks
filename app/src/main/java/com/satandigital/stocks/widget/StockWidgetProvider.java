@@ -6,7 +6,6 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.satandigital.stocks.R;
@@ -24,8 +23,6 @@ public class StockWidgetProvider extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
-
-        Log.d("TAG", "widget: onUpdate");
 
         // Perform this loop procedure for each App Widget that belongs to this provider
         for (int appWidgetId : appWidgetIds) {
@@ -54,8 +51,6 @@ public class StockWidgetProvider extends AppWidgetProvider {
         super.onReceive(context, intent);
 
         if (StockTaskService.ACTION_DATA_UPDATED.equals(intent.getAction())) {
-            Log.d("TAG", "widget: onReceive");
-
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(
                     new ComponentName(context, getClass()));

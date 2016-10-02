@@ -53,12 +53,10 @@ public class Utils {
         } catch (JSONException e) {
             Log.e(LOG_TAG, "String to JSON failed: " + e);
         }
-        if (batchOperations.size()>0) updateWidgets(context);
         return batchOperations;
     }
 
     public static void updateWidgets(Context context) {
-        Log.d("TAG", "update");
         Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED)
                 .setPackage(context.getPackageName());
         context.sendBroadcast(dataUpdatedIntent);
@@ -99,6 +97,7 @@ public class Utils {
     }
 
     public static String truncateChange(String change, boolean isPercentChange) {
+        if (change == null || change.equals("null")) return "0";
         String weight = change.substring(0, 1);
         String ampersand = "";
         if (isPercentChange) {

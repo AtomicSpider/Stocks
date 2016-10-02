@@ -1,5 +1,6 @@
 package com.satandigital.stocks.rest;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import com.satandigital.stocks.R;
 import com.satandigital.stocks.data.QuoteColumns;
 import com.satandigital.stocks.data.QuoteProvider;
+import com.satandigital.stocks.data.QuoteTemporalColumns;
 import com.satandigital.stocks.touch_helper.ItemTouchHelperAdapter;
 import com.satandigital.stocks.touch_helper.ItemTouchHelperViewHolder;
 
@@ -44,6 +46,7 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
         return vh;
     }
 
+    @TargetApi(16)
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final Cursor cursor) {
         viewHolder.symbol.setText(cursor.getString(cursor.getColumnIndex("symbol")));
@@ -81,6 +84,9 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
         mContext.getContentResolver().delete(QuoteProvider.Quotes.withSymbol(symbol), null, null);
         notifyItemRemoved(position);
         Utils.updateWidgets(mContext);
+
+        mContext.getContentResolver().delete(QuoteProvider.QuotesTemporal.CONTENT_URI,
+                QuoteTemporalColumns.SYMBOL + " = \"" + symbol + "\"", null);
     }
 
     @Override

@@ -3,8 +3,6 @@ package com.satandigital.stocks.widget;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Binder;
-import android.util.Log;
-import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -31,11 +29,11 @@ public class StockWidgetService extends RemoteViewsService {
 
             @Override
             public void onDataSetChanged() {
-                Log.d("TAG", "widget datasetchanged");
 
                 if (data != null) {
                     data.close();
                 }
+
 
                 final long identityToken = Binder.clearCallingIdentity();
                 data = getContentResolver().query(
@@ -63,28 +61,27 @@ public class StockWidgetService extends RemoteViewsService {
 
             @Override
             public RemoteViews getViewAt(int position) {
-                if (position == AdapterView.INVALID_POSITION ||
-                        data == null || !data.moveToPosition(position)) {
-                    return null;
-                }
+
                 RemoteViews views = new RemoteViews(getPackageName(),
                         R.layout.widget_list_item_quote);
 
-                views.setTextViewText(R.id.stock_symbol, data.getString(data.getColumnIndex("symbol")));
-                views.setTextViewText(R.id.bid_price, data.getString(data.getColumnIndex("bid_price")));
-                views.setTextViewText(R.id.change, data.getString(data.getColumnIndex("percent_change")));
-                if (data.getInt(data.getColumnIndex("is_up")) == 1) {
-                    views.setInt(R.id.change, "setBackgroundResource", R.drawable.percent_change_pill_green);
-                } else {
-                    views.setInt(R.id.change, "setBackgroundResource", R.drawable.percent_change_pill_red);
-                }
+                if (data.moveToPosition(position)) {
+                    views.setTextViewText(R.id.stock_symbol, data.getString(data.getColumnIndex("symbol")));
+                    views.setTextViewText(R.id.bid_price, data.getString(data.getColumnIndex("bid_price")));
+                    views.setTextViewText(R.id.change, data.getString(data.getColumnIndex("percent_change")));
+                    if (data.getInt(data.getColumnIndex("is_up")) == 1) {
+                        views.setInt(R.id.change, "setBackgroundResource", R.drawable.percent_change_pill_green);
+                    } else {
+                        views.setInt(R.id.change, "setBackgroundResource", R.drawable.percent_change_pill_red);
+                    }
 
-                return views;
+                    return views;
+                } else return null;
             }
 
             @Override
             public RemoteViews getLoadingView() {
-                return new RemoteViews(getPackageName(), R.layout.widget_list_item_quote);
+                return null;
             }
 
             @Override
@@ -94,8 +91,6 @@ public class StockWidgetService extends RemoteViewsService {
 
             @Override
             public long getItemId(int i) {
-                if (data.moveToPosition(i))
-                    return data.getLong(data.getColumnIndex("_id"));
                 return i;
             }
 

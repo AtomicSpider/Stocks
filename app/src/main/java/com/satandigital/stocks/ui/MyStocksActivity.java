@@ -15,7 +15,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -121,7 +120,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         mTitle = getTitle();
         if (isConnected) {
             long period = 3600L;
-            long flex = 10L;
             String periodicTag = "periodic";
 
             // create a periodic task to pull stocks once every hour after the app has been opened. This
@@ -129,22 +127,18 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
             PeriodicTask periodicTask = new PeriodicTask.Builder()
                     .setService(StockTaskService.class)
                     .setPeriod(period)
-                    .setFlex(flex)
                     .setTag(periodicTag)
                     .setRequiredNetwork(Task.NETWORK_STATE_CONNECTED)
-                    .setRequiresCharging(false)
                     .build();
             // Schedule task with tag "periodic." This ensure that only the stocks present in the DB
             // are updated.
             GcmNetworkManager.getInstance(this).schedule(periodicTask);
         }
 
-        if (getIntent().hasExtra("action")) {
+        if (getIntent().hasExtra("action"))
             if (getIntent().getStringExtra("action").equals(ADD_STOCK_FROM_WIDGET)) {
-                Log.d("TAG", "add stock frm widget");
                 showAddStockDialog();
             }
-        }
     }
 
     private void showAddStockDialog() {
@@ -253,6 +247,11 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
             if (data.getStringExtra("action").equals("delete")) {
                 getContentResolver().delete(QuoteProvider.Quotes.CONTENT_URI,
                         QuoteTemporalColumns.SYMBOL + " = \"" + data.getStringExtra("symbol") + "\"", null);
+
+                getContentResolver().delete(QuoteProvider.QuotesTemporal.CONTENT_URI,
+                        QuoteTemporalColumns.SYMBOL + " = \"" + data.getStringExtra("symbol") + "\"", null);
+
+                Utils.updateWidgets(mContext);
             }
         }
     }

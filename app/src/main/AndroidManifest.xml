@@ -55,12 +55,13 @@
             android:authorities="com.satandigital.stocks.data.QuoteProvider"
             android:exported="false" />
 
-        <receiver android:name=".widget.StockWidgetProvider" >
+        <receiver android:name=".widget.StockWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="com.satandigital.stocks.service.ACTION_DATA_UPDATED" />
             </intent-filter>
-            <meta-data android:name="android.appwidget.provider"
+            <meta-data
+                android:name="android.appwidget.provider"
                 android:resource="@xml/stock_widget_info" />
         </receiver>
         <service
